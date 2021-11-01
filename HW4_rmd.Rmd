@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Load libraries needed for this homework
 
-```{r}
+```{r Load library}
 
 library(here)
 library(readr)
@@ -24,4 +24,54 @@ library(tmap)
 ```
 
 # Read in data
+
+All data stored on "Data" folder, and can be retrieved from the following URLs
+- Global gender inequality data:: http://hdr.undp.org/en/indicators/68606#
+- Spatial data of world: https://hub.arcgis.com/datasets/2b93b06dc0dc4e809d3c8db5cb96ba69_0/explore?location=-2.688200%2C0.000000%2C1.41
+
+```{r Read data}
+
+# Global inequality index
+GII <-  read_csv(here::here("Data", "Gender Inequality Index (GII).csv"), locale = locale(encoding = "latin1"), na="..",skip=5)
+
+# Spatial data of world
+worldmap <- st_read(here::here("Data",  "World_Countries_(Generalized)", "World_Countries__Generalized_.shp"))
+
+```
+
+# Process GII data
+
+```{r Process data}
+
+GII <- GII %>%
+  # keep only rows with country data
+  filter(`HDI Rank` != "") %>%
+  filter(`Country` != "") %>%
+  # select relevant columns
+  dplyr::select(`Country`, `2010`, `2019`) %>%
+  # compute difference in inequality between 2010 and 2019
+  mutate("Diff" = `2019` - `2010`) %>%
+  # add column for ISO-2 character code for country
+  mutate("iso" = countrycode(`Country`, 'country.name', 'iso2c')) %>%
+  # clean name
+  clean_names()
+
+```
+
+# Join GII data to world map
+
+```{r Join data}
+
+worldmap <- worldmap %>%
+  left_join(., GII, by = c("ISO" = "iso"))
+
+```
+
+# Map out difference
+
+```{r Mapping}
+
+qtm(worldmap, fill="diff")
+
+```
 
