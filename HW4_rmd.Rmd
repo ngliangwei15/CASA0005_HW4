@@ -1,0 +1,27 @@
+---
+title: "Homework 4"
+author: "Liang Wei Ng"
+date: "11/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load libraries needed for this homework
+
+```{r}
+
+library(here)
+library(readr)
+library(sf)
+library(janitor)
+library(dplyr)
+library(countrycode)
+library(tmap)
+
+```
+
+# Read in data
+
